@@ -6,16 +6,18 @@ from bomb import Explosion
 pygame.init()
 
 winW,winH = 600,600
-blockW,blockH,playerCant = 15,15,1
+mazeW,mazeH,playerCant = 15,15,1
+
+blocksW,blocksH = winW//mazeH , winH//mazeH
 Bombs = []
 Explosions = []
 window = pygame.display.set_mode((winW,winH))
 pygame.display.set_caption("Bomberman Ultra")
 
-Bomberman = Player()
 mainLoop = True
+NPCs, NumNPC = [], 0
 
-mainMaze = GameMap(blockW,blockH,playerCant)
+mainMaze = GameMap(mazeW,mazeH,playerCant)
 
 mazeRender = mainMaze.getMaze()
 i, len1 = 0,len(mazeRender)
@@ -24,32 +26,34 @@ while i < len1:
 	while j < len2:
 		if mazeRender[i][j][0] == 0 or mazeRender[i][j][0] == 1 or mazeRender[i][j][0] == 2 or mazeRender[i][j][0] == 3 or mazeRender[i][j][0] == 4: 
 			#Represents walking paths, white snow block
-			pygame.draw.rect(window,(255,250,250),((i)*40,(j)*40,40,40))
+			pygame.draw.rect(window,(255,250,250),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 		if mazeRender[i][j][1] == 1: 
 			#Represents Bomb, Black
-			pygame.draw.rect(window, (0,0,0),((i)*40,(j)*40,40,40))
+			pygame.draw.rect(window, (0,0,0),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 		if mazeRender[i][j][1] == 2: 
 			#Represents explosion, orange 
-			pygame.draw.rect(window,(255,165,0),((i)*40,(j)*40,40,40))
+			pygame.draw.rect(window,(255,165,0),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 		if mazeRender[i][j][0] == 1: 
 			#Represents player 1. blue
+			Bomberman = Player(i,j,blocksW-10,blocksH-10)
 			values = Bomberman.renderValues()
-			pygame.draw.rect(window,(0,0,255),(((values[0])*40)+4,((values[1])*40)+4,values[2],values[3]))
+			print(values)
+			pygame.draw.rect(window,(0,0,255),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 		if mazeRender[i][j][0] == 2: 
 			#Represents player 2. Red
-			pygame.draw.rect(window,(255,0,0),((i)*40,(j)*40,40,40))
+			pygame.draw.rect(window,(255,0,0),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 		if mazeRender[i][j][0] == 3: 
 			#Represents player 3. Green
-			pygame.draw.rect(window,(0,25,0),((i)*40,(j)*40,40,40))
+			pygame.draw.rect(window,(0,25,0),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 		if mazeRender[i][j][0] == 4: 
 			#Represents player 4. Yellow
-			pygame.draw.rect(window,(255,255,0),((i)*40,(j)*40,40,40))
+			pygame.draw.rect(window,(255,255,0),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 		if mazeRender[i][j][0] == 5: 
 			#represents breackable wall, brown
-			pygame.draw.rect(window,(210,105,30),((i)*40,(j)*40,40,40))
+			pygame.draw.rect(window,(210,105,30),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 		if mazeRender[i][j][0] == 6: 
 			#Represents unbreackable wall, gray
-			pygame.draw.rect(window,(128,128,128),((i)*40,(j)*40,40,40))
+			pygame.draw.rect(window,(128,128,128),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 		j+=1
 	i+=1
 
@@ -93,36 +97,36 @@ while mainLoop:
 	#Main map rendering
 	i,len1 = 0,len(mazeRender)
 	while i < len1:
-		j , len2= 0,len(mazeRender[i])
+		j, len2 = 0,len(mazeRender[i])
 		while j < len2:
 			if mazeRender[i][j][0] == 0 or mazeRender[i][j][0] == 1 or mazeRender[i][j][0] == 2 or mazeRender[i][j][0] == 3 or mazeRender[i][j][0] == 4: 
 				#Represents walking paths, white snow block
-				pygame.draw.rect(window,(255,250,250),((i)*40,(j)*40,40,40))
+				pygame.draw.rect(window,(255,250,250),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 			if mazeRender[i][j][1] == 1: 
 				#Represents Bomb, Black
-				pygame.draw.rect(window, (0,0,0),((i)*40,(j)*40,40,40))
+				pygame.draw.rect(window, (0,0,0),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 			if mazeRender[i][j][1] == 2: 
 				#Represents explosion, orange 
-				pygame.draw.rect(window,(255,165,0),((i)*40,(j)*40,40,40))
+				pygame.draw.rect(window,(255,165,0),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 			if mazeRender[i][j][0] == 1: 
 				#Represents player 1. blue
 				values = Bomberman.renderValues()
-				pygame.draw.rect(window,(0,0,255),(((values[0])*40)+4,((values[1])*40)+4,values[2],values[3]))
+				pygame.draw.rect(window,(0,0,255),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 			if mazeRender[i][j][0] == 2: 
 				#Represents player 2. Red
-				pygame.draw.rect(window,(255,0,0),((i)*40,(j)*40,40,40))
+				pygame.draw.rect(window,(255,0,0),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 			if mazeRender[i][j][0] == 3: 
 				#Represents player 3. Green
-				pygame.draw.rect(window,(0,25,0),((i)*40,(j)*40,40,40))
+				pygame.draw.rect(window,(0,25,0),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 			if mazeRender[i][j][0] == 4: 
 				#Represents player 4. Yellow
-				pygame.draw.rect(window,(255,255,0),((i)*40,(j)*40,40,40))
+				pygame.draw.rect(window,(255,255,0),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 			if mazeRender[i][j][0] == 5: 
 				#represents breackable wall, brown
-				pygame.draw.rect(window,(210,105,30),((i)*40,(j)*40,40,40))
+				pygame.draw.rect(window,(210,105,30),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 			if mazeRender[i][j][0] == 6: 
 				#Represents unbreackable wall, gray
-				pygame.draw.rect(window,(128,128,128),((i)*40,(j)*40,40,40))
+				pygame.draw.rect(window,(128,128,128),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 			j+=1
 		i+=1
 	#Main map rendering end
@@ -136,7 +140,7 @@ while mainLoop:
 			Explosions.append(Explosion(Bombs[i].posX,Bombs[i].posY))
 			rangeBomb = Bombs[i].range
 			for j in range(rangeBomb):
-				if Bombs[i].posX+j+1 <= blockW:
+				if Bombs[i].posX+j+1 <= mazeW:
 					if mazeRender[Bombs[i].posX+j+1][Bombs[i].posY][0] != 6:
 						if mazeRender[Bombs[i].posX+j+1][Bombs[i].posY][0] == 5:
 							mazeRender[Bombs[i].posX+j+1][Bombs[i].posY][0] = 0
@@ -160,7 +164,7 @@ while mainLoop:
 							mazeRender[Bombs[i].posX-(j+1)][Bombs[i].posY][1] = 2
 							Explosions.append(Explosion(Bombs[i].posX-(j+1),Bombs[i].posY))
 
-				if Bombs[i].posY+j+1 <= blockH:
+				if Bombs[i].posY+j+1 <= mazeH:
 					if mazeRender[Bombs[i].posX][Bombs[i].posY+j+1][0] != 6:
 						if mazeRender[Bombs[i].posX][Bombs[i].posY+j+1][0] == 5:
 							mazeRender[Bombs[i].posX][Bombs[i].posY+j+1][0] = 0
