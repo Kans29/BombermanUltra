@@ -11,7 +11,8 @@ class GameMap(object):
 	5 -> Bomb
 	6 -> Breackable wall
 	7 -> Not breackable wall
-	8 and later -> PowerUp item
+	8 -> bomb fire 
+	9 and later on -< Power ups
 	"""
 	def __init__(self, width,heigth,players):
 		if width%2 == 0:
@@ -33,17 +34,17 @@ class GameMap(object):
 					self.maze[i][j] = 7
 				elif (i == 1 and j == 1) or (i == width-2 and j == heigth-2) or (i == width-2 and j == 1) or (i == 1 and j == heigth-2):
 					self.maze[i][j] = 0
-					if self.maze[i+1][j] != 0:
+					if self.maze[i+1][j] != 0 and self.maze[i+1][j] != 7:
 						self.maze[i+1][j] = 0
-					if self.maze[i-1][j] != 0:
+					if self.maze[i-1][j] != 0 and self.maze[i-1][j] != 7:
 						self.maze[i-1][j] = 0
-					if self.maze[i][j+1] != 0:
+					if self.maze[i][j+1] != 0 and self.maze[i][j+1] != 7:
 						self.maze[i][j+1] = 0
-					if self.maze[i][j-1] != 0:
+					if self.maze[i][j-1] != 0 and self.maze[i][j-1] != 7:
 						self.maze[i][j-1] = 0
 				elif self.maze[i][j] == -1:
 					valor = randint(0,100)
-					if valor <=50:
+					if valor <=30:
 						self.maze[i][j] = 0
 					else:
 						self.maze[i][j] = 6
