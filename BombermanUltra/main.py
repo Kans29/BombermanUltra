@@ -37,7 +37,6 @@ while i < len1:
 			#Represents player 1. blue
 			Bomberman = Player(i,j,blocksW-10,blocksH-10)
 			values = Bomberman.renderValues()
-			print(values)
 			pygame.draw.rect(window,(0,0,255),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 		if mazeRender[i][j][0] == 2: 
 			#Represents player 2. Red
@@ -67,22 +66,22 @@ while mainLoop:
 	keys = pygame.key.get_pressed()
 
 	if keys[pygame.K_LEFT]:
-		if mazeRender[Bomberman.posX-1][Bomberman.posY][0] == 0:
+		if mazeRender[Bomberman.posX-1][Bomberman.posY][0] == 0 and mazeRender[Bomberman.posX-1][Bomberman.posY][1] != 1:
 			mazeRender[Bomberman.posX][Bomberman.posY][0] = 0
 			mazeRender[Bomberman.posX-1][Bomberman.posY][0] = 1
 			Bomberman.posX -= 1
 	if keys[pygame.K_RIGHT]:
-		if mazeRender[Bomberman.posX+1][Bomberman.posY][0] == 0:
+		if mazeRender[Bomberman.posX+1][Bomberman.posY][0] == 0 and mazeRender[Bomberman.posX+1][Bomberman.posY][1] != 1:
 			mazeRender[Bomberman.posX][Bomberman.posY][0] = 0
 			mazeRender[Bomberman.posX+1][Bomberman.posY][0] = 1
 			Bomberman.posX += 1
 	if keys[pygame.K_UP]:
-		if mazeRender[Bomberman.posX][Bomberman.posY-1][0] == 0:
+		if mazeRender[Bomberman.posX][Bomberman.posY-1][0] == 0 and mazeRender[Bomberman.posX][Bomberman.posY-1][1] != 1:
 			mazeRender[Bomberman.posX][Bomberman.posY][0] = 0
 			mazeRender[Bomberman.posX][Bomberman.posY-1][0] = 1
 			Bomberman.posY -= 1
 	if keys[pygame.K_DOWN]:
-		if mazeRender[Bomberman.posX][Bomberman.posY+1][0] == 0:
+		if mazeRender[Bomberman.posX][Bomberman.posY+1][0] == 0 and mazeRender[Bomberman.posX][Bomberman.posY+1][1] != -1:
 			mazeRender[Bomberman.posX][Bomberman.posY][0] = 0
 			mazeRender[Bomberman.posX][Bomberman.posY+1][0] = 1
 			Bomberman.posY += 1
