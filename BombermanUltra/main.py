@@ -84,8 +84,10 @@ while mainLoop:
 			Bomberman.posY += 1
 	if keys[pygame.K_SPACE]:
 		if mazeRender[Bomberman.posX][Bomberman.posY][1] == 0:
-			mazeRender[Bomberman.posX][Bomberman.posY][1] = 1
-			Bombs.append(Bomb(Bomberman.posX,Bomberman.posY))
+			if Bomberman.bombCount > 0:
+				mazeRender[Bomberman.posX][Bomberman.posY][1] = 1
+				Bombs.append(Bomb(Bomberman.posX,Bomberman.posY))
+				Bomberman.bombCount -= 1
 	#Main movement handler end
 
 	#Main map rendering
@@ -166,6 +168,7 @@ while mainLoop:
 							mazeRender[Bombs[i].posX][Bombs[i].posY+j+1][1] = 2
 							Explosions.append(Explosion(Bombs[i].posX,Bombs[i].posY+j+1))
 			del Bombs[i]
+			Bomberman.bombCount += 1
 		i-=1
 	i = len(Explosions)-1
 	while i >= 0:
