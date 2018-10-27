@@ -186,6 +186,8 @@ while mainLoop:
 		elif NPC.iaType == 3:
 			NPCmov[index] = NPC.areaProtecting(Bomberman.getPos(),mazeRender)
 			index +=1
+	#for i in NPCmov:
+		#print(i)
 	i = 0
 	while i < NumNPC:
 		if NPCmov[i] != []:

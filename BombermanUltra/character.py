@@ -60,15 +60,22 @@ class NPC(Player):
 					newCurrent = newCurrent.parent
 				path.pop(len(path)-1)
 				path = path[::-1]
-				break
+				return path
 
 			children = []
+			inVisited = False
 			for direction,iteratingPositions in enumerate([(0, -1), (0, 1), (-1, 0), (1, 0)]):
 				nextPositions = (currentNode.posX + iteratingPositions[0], currentNode.posY + iteratingPositions[1])
-				if not (maze[nextPositions[0]][nextPositions[1]][0] == 5 or maze[nextPositions[0]][nextPositions[1]][0] == 6  ):
+				if not (maze[nextPositions[0]][nextPositions[1]][0] == 5 or maze[nextPositions[0]][nextPositions[1]][0] == 6 or maze[nextPositions[0]][nextPositions[1]][0] == 2 or maze[nextPositions[0]][nextPositions[1]][0] == 3 or maze[nextPositions[0]][nextPositions[1]][0] == 4):
 					newNode = Node(nextPositions,currentNode,direction)
-					if newNode not in closedList:
+					inVisited = False
+					for i in closedList:
+						if i.equal(newNode):
+							inVisited = True
+							break
+					if not(inVisited):
 						children.append(newNode)
+						
 			inVisited = False
 			for child in children:
 				for i in closedList:
@@ -76,7 +83,7 @@ class NPC(Player):
 						inVisited = True
 						break
 				if inVisited:
-					break
+					continue
 				skip = False
 				child.g = currentNode.g + 1
 				child.h = ((child.posX - endNode.posX) ** 2) + ((child.posY - endNode.posY) ** 2)
@@ -88,12 +95,7 @@ class NPC(Player):
 							break
 				if not(skip):
 					openList.append((child,child.f))
-			if len(openList) == 0:
-				break
-		if path != []:
-			return path
-		else:
-			return self.wandering()
+		return self.wandering()
 
 	def pathclosing(self,playerDir,maze,mazeSize):
 
