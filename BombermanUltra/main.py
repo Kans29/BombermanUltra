@@ -7,8 +7,8 @@ from bomb import Explosion
 pygame.init()
 
 winW,winH = 600,600
-mazeW,mazeH,playerCant = 15,15,2
-
+mazeW,mazeH,playerCant = 15,15,3
+playerPos = []
 blocksW,blocksH = winW//mazeH , winH//mazeH
 Bombs = []
 Explosions = []
@@ -37,24 +37,25 @@ while i < len1:
 		if mazeRender[i][j][0] == 1: 
 			#Represents player 1. blue
 			Bomberman = Player(i,j,blocksW-10,blocksH-10)
+			playerPos = [i,j]
 			values = Bomberman.renderValues()
 			pygame.draw.rect(window,(0,0,255),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 		if mazeRender[i][j][0] == 2: 
 			#Represents player 2. Red
 			NumNPC -=1
-			NPCs.append(NPC(i,j,blocksW-10,blocksH-10,1))
+			NPCs.append(NPC(i,j,blocksW-10,blocksH-10,1,playerPos))
 			values = NPCs[0].renderValues()
 			pygame.draw.rect(window,(255,0,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 		if mazeRender[i][j][0] == 3: 
 			#Represents player 3. Green
 			NumNPC -=1
-			NPCs.append(NPC(i,j,blocksW-10,blocksH-10,1))
+			NPCs.append(NPC(i,j,blocksW-10,blocksH-10,2,playerPos))
 			values = NPCs[1].renderValues()
 			pygame.draw.rect(window,(0,25,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 		if mazeRender[i][j][0] == 4: 
 			#Represents player 4. Yellow
 			NumNPC -=1
-			NPCs.append(NPC(i,j,blocksW-10,blocksH-10,1))
+			NPCs.append(NPC(i,j,blocksW-10,blocksH-10,1,playerPos))
 			values = NPCs[2].renderValues()
 			pygame.draw.rect(window,(255,255,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 		if mazeRender[i][j][0] == 5: 
@@ -77,48 +78,68 @@ while mainLoop:
 	keys = pygame.key.get_pressed()
 
 	if keys[pygame.K_LEFT]:
-		if mazeRender[Bomberman.posX-1][Bomberman.posY][0] == 0 and mazeRender[Bomberman.posX-1][Bomberman.posY][1] != 1:
+		if mazeRender[Bomberman.posX-1][Bomberman.posY][0] != 5 and mazeRender[Bomberman.posX-1][Bomberman.posY][0] != 6 and mazeRender[Bomberman.posX-1][Bomberman.posY][1] != 1:
 			mazeRender[Bomberman.posX][Bomberman.posY][0] = 0
 			mazeRender[Bomberman.posX-1][Bomberman.posY][0] = 1
 			Bomberman.posX -= 1
+			Bomberman.direct = 3
 			index = 0
 			for NPC in NPCs:
 				#Pathfinding
 				if NPC.iaType == 1: 
 					NPCmov[index] = NPC.pathfinding(Bomberman.getPos(),mazeRender)
 					index +=1
+				elif NPC.iaType == 2:
+					NPC.playerPos[0]-=1
+					NPCmov[index] = NPC.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
+					index +=1
 	if keys[pygame.K_RIGHT]:
-		if mazeRender[Bomberman.posX+1][Bomberman.posY][0] == 0 and mazeRender[Bomberman.posX+1][Bomberman.posY][1] != 1:
+		if mazeRender[Bomberman.posX+1][Bomberman.posY][0] != 5 and mazeRender[Bomberman.posX+1][Bomberman.posY][0] != 6 and mazeRender[Bomberman.posX+1][Bomberman.posY][1] != 1:
 			mazeRender[Bomberman.posX][Bomberman.posY][0] = 0
 			mazeRender[Bomberman.posX+1][Bomberman.posY][0] = 1
 			Bomberman.posX += 1
+			Bomberman.direct = 1
 			index = 0
 			for NPC in NPCs:
 				#Pathfinding
 				if NPC.iaType == 1: 
 					NPCmov[index] =  NPC.pathfinding(Bomberman.getPos(),mazeRender)
 					index +=1
+				elif NPC.iaType == 2:
+					NPC.playerPos[0]+=1
+					NPCmov[index] = NPC.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
+					index +=1
 	if keys[pygame.K_UP]:
-		if mazeRender[Bomberman.posX][Bomberman.posY-1][0] == 0 and mazeRender[Bomberman.posX][Bomberman.posY-1][1] != 1:
+		if mazeRender[Bomberman.posX][Bomberman.posY-1][0] != 5 and mazeRender[Bomberman.posX][Bomberman.posY-1][0] != 6 and mazeRender[Bomberman.posX][Bomberman.posY-1][1] != 1:
 			mazeRender[Bomberman.posX][Bomberman.posY][0] = 0
 			mazeRender[Bomberman.posX][Bomberman.posY-1][0] = 1
 			Bomberman.posY -= 1
+			Bomberman.direct = 0
 			index = 0
 			for NPC in NPCs:
 				#Pathfinding
 				if NPC.iaType == 1: 
 					NPCmov[index] =  NPC.pathfinding(Bomberman.getPos(),mazeRender)
 					index +=1
+				elif NPC.iaType == 2:
+					NPC.playerPos[1]-=1
+					NPCmov[index] = NPC.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
+					index +=1
 	if keys[pygame.K_DOWN]:
-		if mazeRender[Bomberman.posX][Bomberman.posY+1][0] == 0 and mazeRender[Bomberman.posX][Bomberman.posY+1][1] != -1:
+		if mazeRender[Bomberman.posX][Bomberman.posY+1][0] != 5 and mazeRender[Bomberman.posX][Bomberman.posY+1][0] != 6  and mazeRender[Bomberman.posX][Bomberman.posY+1][1] != -1:
 			mazeRender[Bomberman.posX][Bomberman.posY][0] = 0
 			mazeRender[Bomberman.posX][Bomberman.posY+1][0] = 1
 			Bomberman.posY += 1
+			Bomberman.direct = 2
 			index = 0
 			for NPC in NPCs:
 				#Pathfinding
 				if NPC.iaType == 1: 
 					NPCmov[index] = NPC.pathfinding(Bomberman.getPos(),mazeRender)
+					index +=1
+				elif NPC.iaType == 2:
+					NPC.playerPos[1]+=1
+					NPCmov[index] = NPC.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
 					index +=1
 	if keys[pygame.K_SPACE]:
 		if mazeRender[Bomberman.posX][Bomberman.posY][1] == 0:
@@ -126,6 +147,16 @@ while mainLoop:
 				mazeRender[Bomberman.posX][Bomberman.posY][1] = 1
 				Bombs.append(Bomb(Bomberman.posX,Bomberman.posY))
 				Bomberman.bombCount -= 1
+				"""
+				for NPC in NPCs:
+					#Pathfinding
+					if NPC.iaType == 1: 
+						NPCmov[index] = NPC.pathfinding(Bomberman.getPos(),mazeRender)
+						index +=1
+					elif NPC.iaType == 2:
+						NPCmov[index] = NPC.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
+						index +=1
+				"""
 	#Main movement handler end
 
 	#NPC movement
@@ -135,30 +166,35 @@ while mainLoop:
 		if NPC.iaType == 1:
 			NPCmov[index] = NPC.pathfinding(Bomberman.getPos(),mazeRender)
 			index +=1
+		elif NPC.iaType == 2:
+			NPCmov[index] = NPC.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
+			index +=1
 	i = 0
 	while i < NumNPC:
 		if NPCmov[i] != []:
 			direction = NPCmov[i][0]
-			print(NPCmov[i])
 			if direction == 0:
-				mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
+				if mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] == 0:
+					mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
 				mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] = i+2
 				NPCs[i].posY -=1
 			if direction == 2:
-				mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
+				if mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] == 0:
+					mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
 				mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] = i+2
 				NPCs[i].posX -=1
 			if direction == 1:
-				mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
+				if mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] == 0:
+					mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
 				mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] = i+2
 				NPCs[i].posY +=1
 			if direction == 3:
-				mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
+				if mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] == 0:
+					mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
 				mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] = i+2
 				NPCs[i].posX +=1
 			NPCmov[i].pop(0)
 		i+=1
-
 	#NPC movement end
 
 	#Main map rendering
@@ -199,6 +235,20 @@ while mainLoop:
 				pygame.draw.rect(window,(128,128,128),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 			j+=1
 		i+=1
+	#re render player and NPCs
+	for i in range(playerCant):
+		if i == 0:
+			values = Bomberman.renderValues()
+			pygame.draw.rect(window,(0,0,255),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
+		if i == 1:
+			values = NPCs[0].renderValues()
+			pygame.draw.rect(window,(255,0,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
+		if i == 2:
+			values = NPCs[1].renderValues()
+			pygame.draw.rect(window,(0,25,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
+		if i == 3:
+			values = NPCs[2].renderValues()
+			pygame.draw.rect(window,(255,255,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 	#Main map rendering end
 
 

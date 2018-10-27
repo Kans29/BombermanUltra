@@ -8,6 +8,7 @@ class Player(object):
 		self.width = sizew
 		self.height = sizeh
 		self.bombCount = 1
+		self.direct = 0
 	def renderValues(self):
 		return (self.posX,self.posY,self.width,self.height)
 	def getPos(self):
@@ -31,9 +32,10 @@ class Node(object):
 		
 class NPC(Player):
 	"""docstring for NPC"""
-	def __init__(self, posx,posy,sizew,sizeh,iaType):
+	def __init__(self, posx,posy,sizew,sizeh,iaType,playerPos):
 		Player.__init__(self, posx,posy,sizew,sizeh)
 		self.iaType = iaType
+		self.playerPos = playerPos
 
 	def pathfinding(self,posFin,maze):
 		startNode = Node(self.getPos(),None,-1)
@@ -59,7 +61,7 @@ class NPC(Player):
 			children = []
 			for direction,iteratingPositions in enumerate([(0, -1), (0, 1), (-1, 0), (1, 0)]):
 				nextPositions = (currentNode.posX + iteratingPositions[0], currentNode.posY + iteratingPositions[1])
-				if not (maze[nextPositions[0]][nextPositions[1]][0] == 5 or maze[nextPositions[0]][nextPositions[1]][0] == 6):
+				if not (maze[nextPositions[0]][nextPositions[1]][0] == 5 or maze[nextPositions[0]][nextPositions[1]][0] == 6 ):
 					newNode = Node(nextPositions,currentNode,direction)
 					if newNode not in closedList:
 						children.append(newNode)
@@ -77,3 +79,20 @@ class NPC(Player):
 								break
 					if not(skip):
 						openList.append((child,child.f))
+
+	def pathclosing(self,playerDir,maze,mazeSize):
+
+		playerPos = self.playerPos[:]
+		if playerDir == 0:
+			while playerPos[1] > 1:
+				playerPos[1]-=1
+		elif playerDir == 1:
+			while playerPos[0] < mazeSize[0]-2:
+				playerPos[0]+=1
+		elif playerDir == 2:
+			while playerPos[1] < mazeSize[1]-2:
+				playerPos[1]+=1
+		elif playerDir == 3:
+			while playerPos[0] > 1:
+				playerPos[0]-=1
+		return self.pathfinding(playerPos,maze)
