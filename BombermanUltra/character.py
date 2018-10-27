@@ -44,6 +44,7 @@ class NPC(Player):
 		endNode = Node(posFin,None,-1)
 		openList = []
 		closedList = []
+		path = []
 		openList.append((startNode,startNode.f))
 		while len(openList) > 0:
 			openList.sort(key=lambda x: x[1])
@@ -52,18 +53,19 @@ class NPC(Player):
 			openList.pop(0)
 
 			if currentNode.equal(endNode):
-				path = []
+				
 				newCurrent = currentNode
 				while newCurrent != None:
 					path.append(newCurrent.direction)
 					newCurrent = newCurrent.parent
 				path.pop(len(path)-1)
-				return path[::-1]
+				path = path[::-1]
+				break
 
 			children = []
 			for direction,iteratingPositions in enumerate([(0, -1), (0, 1), (-1, 0), (1, 0)]):
 				nextPositions = (currentNode.posX + iteratingPositions[0], currentNode.posY + iteratingPositions[1])
-				if not (maze[nextPositions[0]][nextPositions[1]][0] == 5 or maze[nextPositions[0]][nextPositions[1]][0] == 6 ):
+				if not (maze[nextPositions[0]][nextPositions[1]][0] == 5 or maze[nextPositions[0]][nextPositions[1]][0] == 6  ):
 					newNode = Node(nextPositions,currentNode,direction)
 					if newNode not in closedList:
 						children.append(newNode)
@@ -81,21 +83,25 @@ class NPC(Player):
 								break
 					if not(skip):
 						openList.append((child,child.f))
+		if path != []:
+			return path
+		else:
+			return self.wandering()
 
 	def pathclosing(self,playerDir,maze,mazeSize):
 
 		playerPos = self.playerPos[:]
 		if playerDir == 0:
-			while playerPos[1] > 1:
+			while playerPos[1] > 1 and maze[playerPos[0]][playerPos[1]-1][0] != 6 and  maze[playerPos[0]][playerPos[1]-1][0] != 5:
 				playerPos[1]-=1
 		elif playerDir == 1:
-			while playerPos[0] < mazeSize[0]-2:
+			while playerPos[0] < mazeSize[0]-2 and maze[playerPos[0]+1][playerPos[1]][0] != 6 and  maze[playerPos[0]+1][playerPos[1]][0] != 5:
 				playerPos[0]+=1
 		elif playerDir == 2:
-			while playerPos[1] < mazeSize[1]-2:
+			while playerPos[1] < mazeSize[1]-2 and maze[playerPos[0]][playerPos[1]+1][0] != 6 and  maze[playerPos[0]][playerPos[1]+1][0] != 5:
 				playerPos[1]+=1
 		elif playerDir == 3:
-			while playerPos[0] > 1:
+			while playerPos[0] > 1 and maze[playerPos[0]-1][playerPos[1]][0] != 6 and  maze[playerPos[0]-1][playerPos[1]][0] != 5:
 				playerPos[0]-=1
 		return self.pathfinding(playerPos,maze)
 
@@ -106,46 +112,49 @@ class NPC(Player):
 		if dist <= self.area:
 			return self.pathfinding(posFin,maze)
 		else:
-			ret = []
-			random = randint(0,100)
-			if self.direct == 0:
-				probUp,probDown,probLeft,probRigth = 40,50,80,100
-				if 0 <= random <= 40:
-					ret.append(0)
-				elif 41 <= random <= 50:
-					ret.append(1)
-				elif 51 <= random <= 75:
-					ret.append(2)
-				elif 76 <= random <= 100:
-					ret.append(3)
-			if self.direct == 1:
-				probUp,probDown,probLeft,probRigth = 25,50,60,100
-				if 0 <= random <= 25:
-					ret.append(0)
-				elif 26 <= random <= 50:
-					ret.append(1)
-				elif 51 <= random <= 60:
-					ret.append(2)
-				elif 61 <= random <= 100:
-					ret.append(3)
-			if self.direct == 2:
-				probUp,probDown,probLeft,probRigth = 10,50,80,100
-				if 0 <= random <= 10:
-					ret.append(0)
-				elif 11 <= random <= 50:
-					ret.append(1)
-				elif 51 <= random <= 75:
-					ret.append(2)
-				elif 75 <= random <= 100:
-					ret.append(3)
-			if self.direct == 3:
-				probUp,probDown,probLeft,probRigth = 25,50,90,100
-				if 0 <= random <= 25:
-					ret.append(0)
-				elif 26 <= random <= 50:
-					ret.append(1)
-				elif 51 <= random <= 90:
-					ret.append(2)
-				elif 91 <= random <= 100:
-					ret.append(3)
-			return ret
+			return self.wandering()
+
+	def wandering(self):
+		ret = []
+		random = randint(0,100)
+		if self.direct == 0:
+			probUp,probDown,probLeft,probRigth = 40,50,80,100
+			if 0 <= random <= 40:
+				ret.append(0)
+			elif 41 <= random <= 50:
+				ret.append(1)
+			elif 51 <= random <= 75:
+				ret.append(2)
+			elif 76 <= random <= 100:
+				ret.append(3)
+		if self.direct == 1:
+			probUp,probDown,probLeft,probRigth = 25,50,60,100
+			if 0 <= random <= 25:
+				ret.append(0)
+			elif 26 <= random <= 50:
+				ret.append(1)
+			elif 51 <= random <= 60:
+				ret.append(2)
+			elif 61 <= random <= 100:
+				ret.append(3)
+		if self.direct == 2:
+			probUp,probDown,probLeft,probRigth = 10,50,80,100
+			if 0 <= random <= 10:
+				ret.append(0)
+			elif 11 <= random <= 50:
+				ret.append(1)
+			elif 51 <= random <= 75:
+				ret.append(2)
+			elif 75 <= random <= 100:
+				ret.append(3)
+		if self.direct == 3:
+			probUp,probDown,probLeft,probRigth = 25,50,90,100
+			if 0 <= random <= 25:
+				ret.append(0)
+			elif 26 <= random <= 50:
+				ret.append(1)
+			elif 51 <= random <= 90:
+				ret.append(2)
+			elif 91 <= random <= 100:
+				ret.append(3)
+		return ret
