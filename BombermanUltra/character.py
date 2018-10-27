@@ -109,43 +109,43 @@ class NPC(Player):
 			ret = []
 			random = randint(0,100)
 			if self.direct == 0:
-				probUp,probDown,probLeft,probRigth = 40,60,80,100
+				probUp,probDown,probLeft,probRigth = 40,50,80,100
 				if 0 <= random <= 40:
 					ret.append(0)
-				elif 41 <= random <= 60:
+				elif 41 <= random <= 50:
 					ret.append(1)
-				elif 61 <= random <= 80:
+				elif 51 <= random <= 75:
 					ret.append(2)
-				elif 81 <= random <= 100:
+				elif 76 <= random <= 100:
 					ret.append(3)
 			if self.direct == 1:
-				probUp,probDown,probLeft,probRigth = 20,40,60,100
-				if 0 <= random <= 20:
+				probUp,probDown,probLeft,probRigth = 25,50,60,100
+				if 0 <= random <= 25:
 					ret.append(0)
-				elif 21 <= random <= 40:
+				elif 26 <= random <= 50:
 					ret.append(1)
-				elif 41 <= random <= 60:
+				elif 51 <= random <= 60:
 					ret.append(2)
 				elif 61 <= random <= 100:
 					ret.append(3)
 			if self.direct == 2:
-				probUp,probDown,probLeft,probRigth = 20,60,80,100
-				if 0 <= random <= 20:
+				probUp,probDown,probLeft,probRigth = 10,50,80,100
+				if 0 <= random <= 10:
 					ret.append(0)
-				elif 21 <= random <= 60:
+				elif 11 <= random <= 50:
 					ret.append(1)
-				elif 61 <= random <= 80:
+				elif 51 <= random <= 75:
 					ret.append(2)
-				elif 81 <= random <= 100:
+				elif 75 <= random <= 100:
 					ret.append(3)
 			if self.direct == 3:
-				probUp,probDown,probLeft,probRigth = 20,40,80,100
-				if 0 <= random <= 20:
+				probUp,probDown,probLeft,probRigth = 25,50,90,100
+				if 0 <= random <= 25:
 					ret.append(0)
-				elif 21 <= random <= 40:
+				elif 26 <= random <= 50:
 					ret.append(1)
-				elif 41 <= random <= 80:
+				elif 51 <= random <= 90:
 					ret.append(2)
-				elif 81 <= random <= 100:
+				elif 91 <= random <= 100:
 					ret.append(3)
 			return ret
