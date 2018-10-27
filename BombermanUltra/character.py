@@ -1,4 +1,5 @@
-from collections import deque
+from random import randint
+from math import sqrt
 
 class Player(object):
 	"""docstring for Bomberman"""
@@ -36,6 +37,7 @@ class NPC(Player):
 		Player.__init__(self, posx,posy,sizew,sizeh)
 		self.iaType = iaType
 		self.playerPos = playerPos
+		self.area = 5
 
 	def pathfinding(self,posFin,maze):
 		startNode = Node(self.getPos(),None,-1)
@@ -96,3 +98,54 @@ class NPC(Player):
 			while playerPos[0] > 1:
 				playerPos[0]-=1
 		return self.pathfinding(playerPos,maze)
+
+	def areaProtecting(self,posFin,maze):
+
+		dist = sqrt((self.posX - posFin[0]) ** 2) + ((self.posY - posFin[1]) ** 2)
+
+		if dist <= self.area:
+			return self.pathfinding(posFin,maze)
+		else:
+			ret = []
+			random = randint(0,100)
+			if self.direct == 0:
+				probUp,probDown,probLeft,probRigth = 40,60,80,100
+				if 0 <= random <= 40:
+					ret.append(0)
+				elif 41 <= random <= 60:
+					ret.append(1)
+				elif 61 <= random <= 80:
+					ret.append(2)
+				elif 81 <= random <= 100:
+					ret.append(3)
+			if self.direct == 1:
+				probUp,probDown,probLeft,probRigth = 20,40,60,100
+				if 0 <= random <= 20:
+					ret.append(0)
+				elif 21 <= random <= 40:
+					ret.append(1)
+				elif 41 <= random <= 60:
+					ret.append(2)
+				elif 61 <= random <= 100:
+					ret.append(3)
+			if self.direct == 2:
+				probUp,probDown,probLeft,probRigth = 20,60,80,100
+				if 0 <= random <= 20:
+					ret.append(0)
+				elif 21 <= random <= 60:
+					ret.append(1)
+				elif 61 <= random <= 80:
+					ret.append(2)
+				elif 81 <= random <= 100:
+					ret.append(3)
+			if self.direct == 3:
+				probUp,probDown,probLeft,probRigth = 20,40,80,100
+				if 0 <= random <= 20:
+					ret.append(0)
+				elif 21 <= random <= 40:
+					ret.append(1)
+				elif 41 <= random <= 80:
+					ret.append(2)
+				elif 81 <= random <= 100:
+					ret.append(3)
+			return ret

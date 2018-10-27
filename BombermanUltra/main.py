@@ -7,7 +7,7 @@ from bomb import Explosion
 pygame.init()
 
 winW,winH = 600,600
-mazeW,mazeH,playerCant = 15,15,3
+mazeW,mazeH,playerCant = 15,15,4
 playerPos = []
 blocksW,blocksH = winW//mazeH , winH//mazeH
 Bombs = []
@@ -55,7 +55,7 @@ while i < len1:
 		if mazeRender[i][j][0] == 4: 
 			#Represents player 4. Yellow
 			NumNPC -=1
-			NPCs.append(NPC(i,j,blocksW-10,blocksH-10,1,playerPos))
+			NPCs.append(NPC(i,j,blocksW-10,blocksH-10,3,playerPos))
 			values = NPCs[2].renderValues()
 			pygame.draw.rect(window,(255,255,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 		if mazeRender[i][j][0] == 5: 
@@ -78,7 +78,7 @@ while mainLoop:
 	keys = pygame.key.get_pressed()
 
 	if keys[pygame.K_LEFT]:
-		if mazeRender[Bomberman.posX-1][Bomberman.posY][0] != 5 and mazeRender[Bomberman.posX-1][Bomberman.posY][0] != 6 and mazeRender[Bomberman.posX-1][Bomberman.posY][1] != 1:
+		if mazeRender[Bomberman.posX-1][Bomberman.posY][0] == 0 and mazeRender[Bomberman.posX-1][Bomberman.posY][1] != 1:
 			mazeRender[Bomberman.posX][Bomberman.posY][0] = 0
 			mazeRender[Bomberman.posX-1][Bomberman.posY][0] = 1
 			Bomberman.posX -= 1
@@ -93,8 +93,11 @@ while mainLoop:
 					NPC.playerPos[0]-=1
 					NPCmov[index] = NPC.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
 					index +=1
+				elif NPC.iaType == 3:
+					NPCmov[index] = NPC.areaProtecting(Bomberman.getPos(),mazeRender)
+					index +=1
 	if keys[pygame.K_RIGHT]:
-		if mazeRender[Bomberman.posX+1][Bomberman.posY][0] != 5 and mazeRender[Bomberman.posX+1][Bomberman.posY][0] != 6 and mazeRender[Bomberman.posX+1][Bomberman.posY][1] != 1:
+		if mazeRender[Bomberman.posX+1][Bomberman.posY][0] == 0 and mazeRender[Bomberman.posX+1][Bomberman.posY][1] != 1:
 			mazeRender[Bomberman.posX][Bomberman.posY][0] = 0
 			mazeRender[Bomberman.posX+1][Bomberman.posY][0] = 1
 			Bomberman.posX += 1
@@ -109,8 +112,11 @@ while mainLoop:
 					NPC.playerPos[0]+=1
 					NPCmov[index] = NPC.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
 					index +=1
+				elif NPC.iaType == 3:
+					NPCmov[index] = NPC.areaProtecting(Bomberman.getPos(),mazeRender)
+					index +=1
 	if keys[pygame.K_UP]:
-		if mazeRender[Bomberman.posX][Bomberman.posY-1][0] != 5 and mazeRender[Bomberman.posX][Bomberman.posY-1][0] != 6 and mazeRender[Bomberman.posX][Bomberman.posY-1][1] != 1:
+		if mazeRender[Bomberman.posX][Bomberman.posY-1][0] == 0 and mazeRender[Bomberman.posX][Bomberman.posY-1][1] != 1:
 			mazeRender[Bomberman.posX][Bomberman.posY][0] = 0
 			mazeRender[Bomberman.posX][Bomberman.posY-1][0] = 1
 			Bomberman.posY -= 1
@@ -125,8 +131,11 @@ while mainLoop:
 					NPC.playerPos[1]-=1
 					NPCmov[index] = NPC.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
 					index +=1
+				elif NPC.iaType == 3:
+					NPCmov[index] = NPC.areaProtecting(Bomberman.getPos(),mazeRender)
+					index +=1
 	if keys[pygame.K_DOWN]:
-		if mazeRender[Bomberman.posX][Bomberman.posY+1][0] != 5 and mazeRender[Bomberman.posX][Bomberman.posY+1][0] != 6  and mazeRender[Bomberman.posX][Bomberman.posY+1][1] != -1:
+		if mazeRender[Bomberman.posX][Bomberman.posY+1][0] == 0  and mazeRender[Bomberman.posX][Bomberman.posY+1][1] != -1:
 			mazeRender[Bomberman.posX][Bomberman.posY][0] = 0
 			mazeRender[Bomberman.posX][Bomberman.posY+1][0] = 1
 			Bomberman.posY += 1
@@ -140,6 +149,9 @@ while mainLoop:
 				elif NPC.iaType == 2:
 					NPC.playerPos[1]+=1
 					NPCmov[index] = NPC.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
+					index +=1
+				elif NPC.iaType == 3:
+					NPCmov[index] = NPC.areaProtecting(Bomberman.getPos(),mazeRender)
 					index +=1
 	if keys[pygame.K_SPACE]:
 		if mazeRender[Bomberman.posX][Bomberman.posY][1] == 0:
@@ -156,6 +168,9 @@ while mainLoop:
 					elif NPC.iaType == 2:
 						NPCmov[index] = NPC.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
 						index +=1
+					elif NPC.iaType == 3:
+						NPCmov[index] = NPC.areaProtecting(Bomberman.getPos(),mazeRender)
+						index +=1
 				"""
 	#Main movement handler end
 
@@ -169,6 +184,9 @@ while mainLoop:
 		elif NPC.iaType == 2:
 			NPCmov[index] = NPC.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
 			index +=1
+		elif NPC.iaType == 3:
+			NPCmov[index] = NPC.areaProtecting(Bomberman.getPos(),mazeRender)
+			index +=1
 	i = 0
 	while i < NumNPC:
 		if NPCmov[i] != []:
@@ -176,23 +194,27 @@ while mainLoop:
 			if direction == 0:
 				if mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] == 0:
 					mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
-				mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] = i+2
-				NPCs[i].posY -=1
+					mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] = i+2
+					NPCs[i].posY -=1
+					NPCs[i].direct = 0
 			if direction == 2:
 				if mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] == 0:
 					mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
-				mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] = i+2
-				NPCs[i].posX -=1
+					mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] = i+2
+					NPCs[i].posX -=1
+					NPCs[i].direct = 3
 			if direction == 1:
 				if mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] == 0:
 					mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
-				mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] = i+2
-				NPCs[i].posY +=1
+					mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] = i+2
+					NPCs[i].posY +=1
+					NPCs[i].direct = 2
 			if direction == 3:
 				if mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] == 0:
 					mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
-				mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] = i+2
-				NPCs[i].posX +=1
+					mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] = i+2
+					NPCs[i].posX +=1
+					NPCs[i].direct = 1
 			NPCmov[i].pop(0)
 		i+=1
 	#NPC movement end
