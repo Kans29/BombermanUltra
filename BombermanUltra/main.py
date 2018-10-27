@@ -51,7 +51,7 @@ while i < len1:
 			NumNPC -=1
 			NPCs.append(NPC(i,j,blocksW-10,blocksH-10,2,playerPos))
 			values = NPCs[1].renderValues()
-			pygame.draw.rect(window,(0,25,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
+			pygame.draw.rect(window,(0,200,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 		if mazeRender[i][j][0] == 4: 
 			#Represents player 4. Yellow
 			NumNPC -=1
@@ -173,7 +173,6 @@ while mainLoop:
 						index +=1
 				"""
 	#Main movement handler end
-
 	#NPC movement
 	index = 0
 	for NPC in NPCs:
@@ -244,14 +243,14 @@ while mainLoop:
 			if mazeRender[i][j][0] == 3: 
 				#Represents player 3. Green
 				values = NPCs[1].renderValues()
-				pygame.draw.rect(window,(0,25,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
+				pygame.draw.rect(window,(10,105,30),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 			if mazeRender[i][j][0] == 4: 
 				#Represents player 4. Yellow
 				values = NPCs[2].renderValues()
 				pygame.draw.rect(window,(255,255,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 			if mazeRender[i][j][0] == 5: 
 				#represents breackable wall, brown
-				pygame.draw.rect(window,(210,105,30),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
+				pygame.draw.rect(window,(180,180,180),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 			if mazeRender[i][j][0] == 6: 
 				#Represents unbreackable wall, gray
 				pygame.draw.rect(window,(128,128,128),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
@@ -267,12 +266,11 @@ while mainLoop:
 			pygame.draw.rect(window,(255,0,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 		if i == 2:
 			values = NPCs[1].renderValues()
-			pygame.draw.rect(window,(0,25,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
+			pygame.draw.rect(window,(10,105,30),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 		if i == 3:
 			values = NPCs[2].renderValues()
 			pygame.draw.rect(window,(255,255,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 	#Main map rendering end
-
 
 	#Handling bomb explosion
 	i = len(Bombs)-1

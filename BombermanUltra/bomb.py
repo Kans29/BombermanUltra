@@ -4,7 +4,7 @@ class Bomb(object):
 		self.posX = posx
 		self.posY = posy
 		self.range = 1
-		self.time = 2000
+		self.time = 1000
 
 	def decreaseTime(self):
 		self.time -= 100
@@ -18,7 +18,7 @@ class Explosion(object):
 	def __init__(self, posx, posy):
 		self.posX = posx
 		self.posY = posy
-		self.time = 1200
+		self.time = 600
 
 	def decreaseTime(self):
 		self.time -= 100

@@ -30,7 +30,7 @@ class Node(object):
 			return True
 		else:
 			return False
-		
+
 class NPC(Player):
 	"""docstring for NPC"""
 	def __init__(self, posx,posy,sizew,sizeh,iaType,playerPos):
@@ -69,20 +69,27 @@ class NPC(Player):
 					newNode = Node(nextPositions,currentNode,direction)
 					if newNode not in closedList:
 						children.append(newNode)
-
+			inVisited = False
 			for child in children:
-				if not(child in closedList):
-					skip = False
-					child.g = currentNode.g + 1
-					child.h = ((child.posX - endNode.posX) ** 2) + ((child.posY - endNode.posY) ** 2)
-					child.f = child.g + child.h
-					for i in openList:
-						if child.equal(i[0]):
-							if child.g > i[0].g:
-								skip = True
-								break
-					if not(skip):
-						openList.append((child,child.f))
+				for i in closedList:
+					if i.equal(child):
+						inVisited = True
+						break
+				if inVisited:
+					break
+				skip = False
+				child.g = currentNode.g + 1
+				child.h = ((child.posX - endNode.posX) ** 2) + ((child.posY - endNode.posY) ** 2)
+				child.f = child.g + child.h
+				for i in openList:
+					if child.equal(i[0]):
+						if child.g > i[0].g:
+							skip = True
+							break
+				if not(skip):
+					openList.append((child,child.f))
+			if len(openList) == 0:
+				break
 		if path != []:
 			return path
 		else:

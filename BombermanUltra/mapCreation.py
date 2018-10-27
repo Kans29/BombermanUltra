@@ -49,7 +49,7 @@ class GameMap(object):
 						self.maze[i][j-1] = [0,0]
 				elif self.maze[i][j][0] == -1:
 					valor = randint(0,100)
-					if valor <=90:
+					if valor <=30:
 						self.maze[i][j] = [0,0]
 					else:
 						self.maze[i][j] = [5,0]
