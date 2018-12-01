@@ -17,7 +17,9 @@ class GameMap(object):
 	0 -> nothing
 	1 -> Bomb
 	2 -> bomb explosion
-	3 -> powerup
+	3 -> extraLife
+	4 -> extraBomb
+	5 -> extraRange
 	"""
 	def __init__(self, width,heigth,players):
 		if width%2 == 0:
@@ -33,6 +35,9 @@ class GameMap(object):
 	def generate(self):
 		width = self.size[0]
 		heigth = self.size[1]
+		extraLife = 1
+		extraBomb = 2
+		extraRange = 1
 		for i in range(width):
 			for j in range(heigth):
 				if (i == 0 or i == width-1 or j == 0 or j == heigth-1) or ( i%2 == 0 and j%2 == 0):
@@ -53,6 +58,44 @@ class GameMap(object):
 						self.maze[i][j] = [0,0]
 					else:
 						self.maze[i][j] = [5,0]
+		while extraRange > 0 and extraBomb > 0 and extraLife > 0:
+			for i in range(width):
+				for j in range(heigth):
+					if self.maze[i][j] == [5,0]:
+						valor = randint(0,100)
+						if valor <=70:
+							valor2 = randint(0,2)
+							if valor2 == 0:
+								if extraLife > 0:
+									self.maze[i][j] = [5,3]
+									extraLife -=1
+								elif extraRange > 0:
+									self.maze[i][j] = [5,5]
+									extraRange -=1
+								elif extraBomb > 0:
+									self.maze[i][j] = [5,4]
+									extraBomb -=1
+							elif  valor == 1:
+								if extraBomb > 0:
+									self.maze[i][j] = [5,4]
+									extraBomb -=1
+								elif extraRange > 0:
+									self.maze[i][j] = [5,5]
+									extraRange -=1
+								elif extraLife > 0:
+									self.maze[i][j] = [5,3]
+									extraLife -=1	
+							else:								
+								if extraRange > 0:
+									self.maze[i][j] = [5,5]
+									extraRange -=1
+								elif extraBomb > 0:
+									self.maze[i][j] = [5,4]
+									extraBomb -=1
+								elif extraLife > 0:
+									self.maze[i][j] = [5,3]
+									extraLife -=1
+
 		for i in range(self.numPlayer):
 			if i == 0:
 				self.maze[1][1] = [1,0]

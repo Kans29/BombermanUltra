@@ -9,6 +9,7 @@ class Player(object):
 		self.width = sizew
 		self.height = sizeh
 		self.bombCount = 1
+		self.bombRange = 2
 		self.direct = 0
 		self.lifes = 3
 	def renderValues(self):

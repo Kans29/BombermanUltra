@@ -1,9 +1,9 @@
 class Bomb(object):
 	"""docstring for Bomb"""
-	def __init__(self, posx,posy):
+	def __init__(self, posx,posy,rangeB):
 		self.posX = posx
 		self.posY = posy
-		self.range = 2
+		self.range = rangeB
 		self.time = 1000
 
 	def decreaseTime(self):
@@ -28,5 +28,6 @@ class Explosion(object):
 			return True
 		else:
 			return False
+
 		
 		

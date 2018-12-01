@@ -10,6 +10,9 @@ from continueFile import menuPerdida
 from terminar import Victoria
 pygame.init()
 myfont = pygame.font.SysFont('Comic Sans MS', 30)
+imgBomb = pygame.image.load("BombaPU.jpg")
+imgFire = pygame.image.load("rangoPU.jpg")
+imgLife = pygame.image.load("vidaPU.jpg")
 mainLoop = True
 while mainLoop:
 
@@ -22,6 +25,7 @@ while mainLoop:
 	mazeW,mazeH,playerCant = 21,21,4
 	gameTime = 90000
 	endDrop,side,times = 200,0,1
+	timeLeft = myfont.render("Time left: "+str(gameTime/1000), False, (255, 255, 255))
 	timeLeft = myfont.render("Time left: "+str(gameTime/1000), False, (255, 255, 255))
 	dificulty = myfont.render("Dificulty: "+str(menu), False, (255, 255, 255))
 	playerPos = []
@@ -87,6 +91,15 @@ while mainLoop:
 					if mazeRender[i][j][0] == 6: 
 						#Represents unbreackable wall, gray
 						pygame.draw.rect(window,(128,128,128),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
+					if mazeRender[i][j] == [0,3]: 
+						#Represents life Power up
+						window.blit(imgLife, pygame.rect.Rect((i)*blocksW,(j)*blocksH,blocksW,blocksH))
+					if mazeRender[i][j] == [0,4]: 
+						#Represents bomb increment
+						window.blit(imgBomb, pygame.rect.Rect((i)*blocksW,(j)*blocksH,blocksW,blocksH))
+					if mazeRender[i][j] == [0,5]: 
+						#Represents bomb range increment
+						window.blit(imgFire, pygame.rect.Rect((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 					j+=1
 				i+=1
 			NumNPC = playerCant-1
@@ -103,6 +116,15 @@ while mainLoop:
 				Bomberman.posX -= 1
 				Bomberman.direct = 3
 				index = 0
+				if mazeRender[Bomberman.posX-1][Bomberman.posY][1] == 3:
+					Bomberman.lifes+=1
+					mazeRender[Bomberman.posX-1][Bomberman.posY][1] = 0
+				if mazeRender[Bomberman.posX-1][Bomberman.posY][1] == 4:
+					Bomberman.bombCount+=1
+					mazeRender[Bomberman.posX-1][Bomberman.posY][1] = 0
+				if mazeRender[Bomberman.posX-1][Bomberman.posY][1] == 5:
+					Bomberman.bombRange+=1
+					mazeRender[Bomberman.posX-1][Bomberman.posY][1] = 0
 				for npc in NPCs:
 					#Pathfinding
 					if npc.level == 1 and npc.estado == 1:
@@ -125,6 +147,15 @@ while mainLoop:
 				mazeRender[Bomberman.posX+1][Bomberman.posY][0] = 1
 				Bomberman.posX += 1
 				Bomberman.direct = 1
+				if mazeRender[Bomberman.posX+1][Bomberman.posY][1] == 3:
+					Bomberman.lifes+=1
+					mazeRender[Bomberman.posX+1][Bomberman.posY][1] = 0
+				if mazeRender[Bomberman.posX+1][Bomberman.posY][1] == 4:
+					Bomberman.bombCount+=1
+					mazeRender[Bomberman.posX+1][Bomberman.posY][1] = 0
+				if mazeRender[Bomberman.posX+1][Bomberman.posY][1] == 5:
+					Bomberman.bombRange+=1
+					mazeRender[Bomberman.posX+1][Bomberman.posY][1] = 0
 				index = 0
 				for npc in NPCs:
 					#Pathfinding
@@ -148,6 +179,15 @@ while mainLoop:
 				mazeRender[Bomberman.posX][Bomberman.posY-1][0] = 1
 				Bomberman.posY -= 1
 				Bomberman.direct = 0
+				if mazeRender[Bomberman.posX][Bomberman.posY-1][1] == 3:
+					Bomberman.lifes+=1
+					mazeRender[Bomberman.posX][Bomberman.posY-1][1] = 0
+				if mazeRender[Bomberman.posX][Bomberman.posY-1][1] == 4:
+					Bomberman.bombCount+=1
+					mazeRender[Bomberman.posX][Bomberman.posY-1][1] = 0
+				if mazeRender[Bomberman.posX][Bomberman.posY-1][1] == 5:
+					Bomberman.bombRange+=1
+					mazeRender[Bomberman.posX][Bomberman.posY-1][1] = 0
 				index = 0
 				for npc in NPCs:
 					#Pathfinding
@@ -171,6 +211,15 @@ while mainLoop:
 				mazeRender[Bomberman.posX][Bomberman.posY+1][0] = 1
 				Bomberman.posY += 1
 				Bomberman.direct = 2
+				if mazeRender[Bomberman.posX][Bomberman.posY+1][1] == 3:
+					Bomberman.lifes+=1
+					mazeRender[Bomberman.posX][Bomberman.posY+1][1] = 0
+				if mazeRender[Bomberman.posX][Bomberman.posY+1][1] == 4:
+					Bomberman.bombCount+=1
+					mazeRender[Bomberman.posX][Bomberman.posY+1][1] = 0
+				if mazeRender[Bomberman.posX][Bomberman.posY+1][1] == 5:
+					Bomberman.bombRange+=1
+					mazeRender[Bomberman.posX][Bomberman.posY+1][1] = 0
 				index = 0
 				for npc in NPCs:
 					#Pathfinding
@@ -193,7 +242,7 @@ while mainLoop:
 			if mazeRender[Bomberman.posX][Bomberman.posY][1] == 0:
 				if Bomberman.bombCount > 0:
 					mazeRender[Bomberman.posX][Bomberman.posY][1] = 1
-					Bombs.append(Bomb(Bomberman.posX,Bomberman.posY))
+					Bombs.append(Bomb(Bomberman.posX,Bomberman.posY,Bomberman.bombRange))
 					Bomberman.bombCount -= 1
 					index = 0
 					for npc in NPCs:
@@ -300,6 +349,15 @@ while mainLoop:
 				if mazeRender[i][j][0] == 6: 
 					#Represents unbreackable wall, gray
 					pygame.draw.rect(window,(128,128,128),((i)*blocksW,(j)*blocksH,blocksW,blocksH))
+				if mazeRender[i][j] == [0,3]: 
+					#Represents life Power up
+					window.blit(imgLife, pygame.rect.Rect((i)*blocksW,(j)*blocksH,blocksW,blocksH))
+				if mazeRender[i][j] == [0,4]: 
+					#Represents bomb increment
+					window.blit(imgBomb, pygame.rect.Rect((i)*blocksW,(j)*blocksH,blocksW,blocksH))
+				if mazeRender[i][j] == [0,5]: 
+					#Represents bomb range increment
+					window.blit(imgFire, pygame.rect.Rect((i)*blocksW,(j)*blocksH,blocksW,blocksH))
 				j+=1
 			i+=1
 		#re render player and NPCs
@@ -335,6 +393,7 @@ while mainLoop:
 						if mazeRender[Bombs[i].posX+j+1][Bombs[i].posY][0] != 6:
 							if mazeRender[Bombs[i].posX+j+1][Bombs[i].posY][0] == 5:
 								mazeRender[Bombs[i].posX+j+1][Bombs[i].posY][0] = 0
+								posible[0] = False
 							if mazeRender[Bombs[i].posX+j+1][Bombs[i].posY][1] == 0:
 								mazeRender[Bombs[i].posX+j+1][Bombs[i].posY][1] = 2
 								Explosions.append(Explosion(Bombs[i].posX+j+1,Bombs[i].posY))
@@ -344,6 +403,7 @@ while mainLoop:
 						if mazeRender[Bombs[i].posX][Bombs[i].posY-(j+1)][0] != 6:
 							if mazeRender[Bombs[i].posX][Bombs[i].posY-(j+1)][0] == 5:
 								mazeRender[Bombs[i].posX][Bombs[i].posY-(j+1)][0] = 0
+								posible[1] = False
 							if mazeRender[Bombs[i].posX][Bombs[i].posY-(j+1)][1] == 0:
 								mazeRender[Bombs[i].posX][Bombs[i].posY-(j+1)][1] = 2
 								Explosions.append(Explosion(Bombs[i].posX,Bombs[i].posY-(j+1)))
@@ -353,6 +413,7 @@ while mainLoop:
 						if mazeRender[Bombs[i].posX-(j+1)][Bombs[i].posY][0] != 6:
 							if mazeRender[Bombs[i].posX-(j+1)][Bombs[i].posY][0] == 5:
 								mazeRender[Bombs[i].posX-(j+1)][Bombs[i].posY][0] = 0
+								posible[2] = False
 							if mazeRender[Bombs[i].posX-(j+1)][Bombs[i].posY][1] == 0:
 								mazeRender[Bombs[i].posX-(j+1)][Bombs[i].posY][1] = 2
 								Explosions.append(Explosion(Bombs[i].posX-(j+1),Bombs[i].posY))
@@ -363,6 +424,7 @@ while mainLoop:
 						if mazeRender[Bombs[i].posX][Bombs[i].posY+j+1][0] != 6:
 							if mazeRender[Bombs[i].posX][Bombs[i].posY+j+1][0] == 5:
 								mazeRender[Bombs[i].posX][Bombs[i].posY+j+1][0] = 0
+								posible[3] = False
 							if mazeRender[Bombs[i].posX][Bombs[i].posY+j+1][1] == 0:
 								mazeRender[Bombs[i].posX][Bombs[i].posY+j+1][1] = 2
 								Explosions.append(Explosion(Bombs[i].posX,Bombs[i].posY+j+1))
@@ -465,6 +527,10 @@ while mainLoop:
 			window.blit(dificulty,(750,125))
 			enemyLeft = myfont.render("Enemy left: "+str(NumNPC - enemyDeleted), False, (255, 255, 255))
 			window.blit(enemyLeft,(750,85))
+			bombAmount = myfont.render("Aviable Bombs: "+str(Bomberman.bombCount), False, (255, 255, 255))
+			window.blit(bombAmount,(750,165))
+			bombRangeCover = myfont.render("Bomb Range: "+str(Bomberman.bombRange), False, (255, 255, 255))
+			window.blit(bombRangeCover,(750,205))
 			pygame.display.update()
 			pygame.time.delay(200)
 			for event in pygame.event.get():
