@@ -56,7 +56,10 @@ class NPC(Player):
 		self.playerPos = playerPos
 		self.area = 5
 		self.level = dificulty
+		self.estado = 1
 
+	def muerte(self):
+		self.estado = 0
 	def pathfinding(self,posFin,maze):
 		startNode = Node(self.getPos(),None,-1)
 		endNode = Node(posFin,None,-1)

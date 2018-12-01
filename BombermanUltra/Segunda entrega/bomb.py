@@ -3,7 +3,7 @@ class Bomb(object):
 	def __init__(self, posx,posy):
 		self.posX = posx
 		self.posY = posy
-		self.range = 1
+		self.range = 2
 		self.time = 1000
 
 	def decreaseTime(self):

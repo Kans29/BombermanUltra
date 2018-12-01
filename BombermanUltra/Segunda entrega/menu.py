@@ -11,7 +11,7 @@ class Cursor(pygame.Rect):
 
 def menuInicial():
 	winW,winH = 600,600
-
+	myfont = pygame.font.SysFont('Comic Sans MS', 30)
 	window = pygame.display.set_mode((winW,winH))
 	pygame.display.set_caption("Bomberman Ultra")
 	logo = pygame.image.load("Logo.png").convert_alpha()
@@ -19,6 +19,7 @@ def menuInicial():
 	boton1b = pygame.image.load("boton1b.png").convert_alpha()
 	boton2a = pygame.image.load("boton2a.png").convert_alpha()
 	boton2b = pygame.image.load("boton2b.png").convert_alpha()
+	Word = myfont.render("Elija una dificultad:", False, (0,0,0))
 	seleccion,exit = 0,0
 	Cursor1 = Cursor()
 	Boton1 = Boton(boton1a,boton1b,120,400)
@@ -34,6 +35,7 @@ def menuInicial():
 					seleccion = 2
 		pygame.Surface.fill(window,(255,255,255))
 		window.blit(logo, pygame.rect.Rect(40,0, 128, 128))
+		window.blit(Word,(170,300))
 		Boton1.update(window,Cursor1)
 		Boton2.update(window,Cursor1)
 		Cursor1.update()
