@@ -69,4 +69,41 @@ class GameMap(object):
 	def getMaze(self):
 		return self.maze
 
+	def endingMaze(self,direct,maze,times):
+		
+		if direct == 1:
+			i = self.size[0]-1-times
+			j = self.size[1]-1-times
+			while j >= 0+times :
+				if maze[i][j][0] != 6:
+					return i,j,direct,times
+				j-=1
+		elif direct == 0:
+			i = 0+times
+			j = self.size[1]-1-times
+			while i < self.size[0]-1-times :
+				if maze[i][j][0] != 6:
+					return i,j,direct,times
+				i+=1
+		elif direct == 3:
+			i = 0+times
+			j = 0+times
+			while j < self.size[1]-1-times  :
+				if maze[i][j][0] != 6:
+					return i,j,direct,times
+				j+=1
+		elif direct == 2:
+			i = self.size[0]-1-times
+			j = 0+times
+			while i >= 0+times :
+				if maze[i][j][0] != 6:
+					return i,j,direct,times
+				i-=1
+		direct+=1
+		if direct == 4:
+			direct = 0
+			times+=1
+		return -1,-1,direct,times
+
+
 		

@@ -6,6 +6,7 @@ from bomb import Bomb
 from bomb import Explosion
 from math import floor
 from menu import menuInicial
+from continueFile import menuPerdida
 pygame.init()
 myfont = pygame.font.SysFont('Comic Sans MS', 30)
 mainLoop = True
@@ -18,7 +19,8 @@ while mainLoop:
 	nivel = True
 	winW,winH = 1000,700
 	mazeW,mazeH,playerCant = 21,21,4
-	gameTime = 90000
+	gameTime = 9000
+	endDrop,side,times = 200,0,1
 	timeLeft = myfont.render("Time left: "+str(gameTime/1000), False, (255, 255, 255))
 	dificulty = myfont.render("Dificulty: "+str(menu), False, (255, 255, 255))
 	playerPos = []
@@ -55,12 +57,14 @@ while mainLoop:
 						#Represents player 1. blue
 						Bomberman = Player(i,j,blocksW-10,blocksH-10)
 						playerPos = [i,j]
+
 						values = Bomberman.renderValues()
 						pygame.draw.rect(window,(0,0,255),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 					if mazeRender[i][j][0] == 2: 
 						#Represents player 2. Red
 						NumNPC -=1
 						newNPC = NPC(i,j,blocksW-10,blocksH-10,1,playerPos,menu)
+
 						NPCs.append(newNPC)
 						values = NPCs[0].renderValues()
 						pygame.draw.rect(window,(255,0,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
@@ -128,7 +132,7 @@ while mainLoop:
 							NPCmov[index] = npc.pathfinding(Bomberman.getPos(),mazeRender)
 							index +=1
 						elif npc.iaType == 2:
-							npc.playerPos[0]-=1
+							npc.playerPos[0]+=1
 							NPCmov[index] = npc.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
 							index +=1
 						elif npc.iaType == 3:
@@ -151,7 +155,7 @@ while mainLoop:
 							NPCmov[index] = npc.pathfinding(Bomberman.getPos(),mazeRender)
 							index +=1
 						elif npc.iaType == 2:
-							npc.playerPos[0]-=1
+							npc.playerPos[1]-=1
 							NPCmov[index] = npc.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
 							index +=1
 						elif npc.iaType == 3:
@@ -174,7 +178,7 @@ while mainLoop:
 							NPCmov[index] = npc.pathfinding(Bomberman.getPos(),mazeRender)
 							index +=1
 						elif npc.iaType == 2:
-							npc.playerPos[0]-=1
+							npc.playerPos[1]+=1
 							NPCmov[index] = npc.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
 							index +=1
 						elif npc.iaType == 3:
@@ -183,6 +187,7 @@ while mainLoop:
 					elif npc.level == 2:
 						NPCmov[index] = npc.pathfindingV2(Bomberman.getPos(),mazeRender)
 						index +=1
+
 		if keys[pygame.K_SPACE]:
 			if mazeRender[Bomberman.posX][Bomberman.posY][1] == 0:
 				if Bomberman.bombCount > 0:
@@ -197,7 +202,6 @@ while mainLoop:
 								NPCmov[index] = npc.pathfinding(Bomberman.getPos(),mazeRender)
 								index +=1
 							elif npc.iaType == 2:
-								npc.playerPos[0]-=1
 								NPCmov[index] = npc.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
 								index +=1
 							elif npc.iaType == 3:
@@ -217,7 +221,6 @@ while mainLoop:
 					NPCmov[index] = npc.pathfinding(Bomberman.getPos(),mazeRender)
 					index +=1
 				elif npc.iaType == 2:
-					npc.playerPos[0]-=1
 					NPCmov[index] = npc.pathclosing(Bomberman.direct,mazeRender,[mazeW,mazeH])
 					index +=1
 				elif npc.iaType == 3:
@@ -371,11 +374,41 @@ while mainLoop:
 		gameTime-=100
 		if gameTime <= 0:
 			gameTime = 0
-			
+			if endDrop == 0:
+				returnValues = mainMaze.endingMaze(side,mazeRender,times)
+				side = returnValues[2]
+				if mazeRender[returnValues[0]][returnValues[1]][0] == 1:
+					Bomberman.lives = 0
+					nivel = False
+					del mainMaze
+					del Bomberman
+					for i in NPCs:
+						del i
+					decision = menuPerdida()
+					if decision == 1:
+						break
+					else:
+						mainLoop = False
+						break
+					pygame.display.quit()
+				elif mazeRender[returnValues[0]][returnValues[1]][0] == 2 or mazeRender[returnValues[0]][returnValues[1]][0] == 3 or mazeRender[returnValues[0]][returnValues[1]][0] == 4:
+					playerCant -= 1
+					NumNPC-=1
+					for i in NPCs:
+						if i.posX == returnValues[0] and i.posY == returnValues[1]:
+							del i
+				mazeRender[returnValues[0]][returnValues[1]][0] = 6
+				times = returnValues[3]
+			else:
+				endDrop-= 100
+		if endDrop < 0:
+			endDrop = 200
+		#Check life status
+		#end check life status
 		pygame.draw.rect(window,(0,0,0),(700,0,300,700)) #Refreshing status bar
 		timeLeft = myfont.render("Time left: "+str(gameTime/1000), False, (255, 255, 255))
 		window.blit(timeLeft,(750,5))
-		livesLeft = myfont.render("Lives left: "+str(Bomberman.lives), False, (255, 255, 255))
+		livesLeft = myfont.render("Lifes left: "+str(Bomberman.lives), False, (255, 255, 255))
 		window.blit(livesLeft,(750,45))
 		window.blit(dificulty,(750,85))
 		pygame.display.update()
