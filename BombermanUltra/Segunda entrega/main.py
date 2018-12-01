@@ -68,7 +68,7 @@ while mainLoop:
 					if mazeRender[i][j][0] == 2: 
 						#Represents player 2. Red
 						NumNPC -=1
-						newNPC = NPC(i,j,blocksW-10,blocksH-10,1,playerPos,menu)
+						newNPC = NPC(i,j,blocksW-10,blocksH-10,1,playerPos,menu,0)
 
 						NPCs.append(newNPC)
 						values = NPCs[0].renderValues()
@@ -76,13 +76,13 @@ while mainLoop:
 					if mazeRender[i][j][0] == 3: 
 						#Represents player 3. Green
 						NumNPC -=1
-						NPCs.append(NPC(i,j,blocksW-10,blocksH-10,2,playerPos,menu))
+						NPCs.append(NPC(i,j,blocksW-10,blocksH-10,2,playerPos,menu,1))
 						values = NPCs[1].renderValues()
 						pygame.draw.rect(window,(0,200,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 					if mazeRender[i][j][0] == 4: 
 						#Represents player 4. Yellow
 						NumNPC -=1
-						NPCs.append(NPC(i,j,blocksW-10,blocksH-10,3,playerPos,menu))
+						NPCs.append(NPC(i,j,blocksW-10,blocksH-10,3,playerPos,menu,2))
 						values = NPCs[2].renderValues()
 						pygame.draw.rect(window,(255,255,0),(((values[0])*blocksW)+4,((values[1])*blocksH)+4,values[2],values[3]))
 					if mazeRender[i][j][0] == 5: 
@@ -138,8 +138,11 @@ while mainLoop:
 						elif npc.iaType == 3:
 							NPCmov[index] = npc.areaProtecting(Bomberman.getPos(),mazeRender)
 							
-					elif npc.level == 2:
-						NPCmov[index] = npc.pathfindingV2(Bomberman.getPos(),mazeRender)
+					elif npc.level == 2 and npc.estado == 1:
+						NPCmov[index] = npc.pathfinding(Bomberman.getPos(),mazeRender)
+						detect = npc.bombDetect(Bombs,mazeRender)
+						if detect[0]:
+							NPCmov[index] = npc.bombAvoid(mazeRender,detect[1],detect[2],detect[3])
 					index +=1
 		if keys[pygame.K_RIGHT]:
 			if mazeRender[Bomberman.posX+1][Bomberman.posY][0] != 6 and mazeRender[Bomberman.posX+1][Bomberman.posY][0] != 5 and mazeRender[Bomberman.posX+1][Bomberman.posY][1] != 1:
@@ -170,8 +173,11 @@ while mainLoop:
 						elif npc.iaType == 3:
 							NPCmov[index] = npc.areaProtecting(Bomberman.getPos(),mazeRender)
 							
-					elif npc.level == 2:
-						NPCmov[index] = npc.pathfindingV2(Bomberman.getPos(),mazeRender)
+					elif npc.level == 2 and npc.estado == 1:
+						NPCmov[index] = npc.pathfinding(Bomberman.getPos(),mazeRender)
+						detect = npc.bombDetect(Bombs,mazeRender)
+						if detect[0]:
+							NPCmov[index] = npc.bombAvoid(mazeRender,detect[1],detect[2],detect[3])
 					index +=1
 		if keys[pygame.K_UP]:
 			if mazeRender[Bomberman.posX][Bomberman.posY-1][0] != 5 and mazeRender[Bomberman.posX][Bomberman.posY-1][0] !=6 and  mazeRender[Bomberman.posX][Bomberman.posY-1][1] != 1:
@@ -202,8 +208,11 @@ while mainLoop:
 						elif npc.iaType == 3:
 							NPCmov[index] = npc.areaProtecting(Bomberman.getPos(),mazeRender)
 							
-					elif npc.level == 2:
-						NPCmov[index] = npc.pathfindingV2(Bomberman.getPos(),mazeRender)
+					elif npc.level == 2 and npc.estado == 1:
+						NPCmov[index] = npc.pathfinding(Bomberman.getPos(),mazeRender)
+						detect = npc.bombDetect(Bombs,mazeRender)
+						if detect[0]:
+							NPCmov[index] = npc.bombAvoid(mazeRender,detect[1],detect[2],detect[3])
 					index +=1
 		if keys[pygame.K_DOWN]:
 			if mazeRender[Bomberman.posX][Bomberman.posY+1][0] != 5 and mazeRender[Bomberman.posX][Bomberman.posY+1][0] != 6 and mazeRender[Bomberman.posX][Bomberman.posY+1][1] != -1:
@@ -234,15 +243,18 @@ while mainLoop:
 						elif npc.iaType == 3:
 							NPCmov[index] = npc.areaProtecting(Bomberman.getPos(),mazeRender)
 							
-					elif npc.level == 2:
-						NPCmov[index] = npc.pathfindingV2(Bomberman.getPos(),mazeRender)
+					elif npc.level == 2 and npc.estado == 1:
+						NPCmov[index] = npc.pathfinding(Bomberman.getPos(),mazeRender)
+						detect = npc.bombDetect(Bombs,mazeRender)
+						if detect[0]:
+							NPCmov[index] = npc.bombAvoid(mazeRender,detect[1],detect[2],detect[3])
 					index +=1
 
 		if keys[pygame.K_SPACE]:
 			if mazeRender[Bomberman.posX][Bomberman.posY][1] == 0:
 				if Bomberman.bombCount > 0:
 					mazeRender[Bomberman.posX][Bomberman.posY][1] = 1
-					Bombs.append(Bomb(Bomberman.posX,Bomberman.posY,Bomberman.bombRange))
+					Bombs.append(Bomb(Bomberman.posX,Bomberman.posY,Bomberman.bombRange,-1))
 					Bomberman.bombCount -= 1
 					index = 0
 					for npc in NPCs:
@@ -257,8 +269,12 @@ while mainLoop:
 							elif npc.iaType == 3:
 								NPCmov[index] = npc.areaProtecting(Bomberman.getPos(),mazeRender)
 								
-						elif npc.level == 2:
-							NPCmov[index] = npc.pathfindingV2(Bomberman.getPos(),mazeRender)
+						elif npc.level == 2 and npc.estado == 1:
+							NPCmov[index] = npc.pathfinding(Bomberman.getPos(),mazeRender)
+							
+							detect = npc.bombDetect(Bombs,mazeRender)
+							if detect[0]:
+								NPCmov[index] = npc.bombAvoid(mazeRender,detect[1],detect[2],detect[3])
 						index +=1
 					
 		#Main movement handler end
@@ -276,43 +292,125 @@ while mainLoop:
 				elif npc.iaType == 3:
 					NPCmov[index] = npc.areaProtecting(Bomberman.getPos(),mazeRender)
 			
-			elif npc.level == 2:
-				NPCmov[index] = npc.pathfindingV2(Bomberman.getPos(),mazeRender)
+			elif npc.level == 2 and npc.estado == 1:
+				NPCmov[index] = npc.pathfinding(Bomberman.getPos(),mazeRender)
+				detect = npc.bombDetect(Bombs,mazeRender)
+				
+				if detect[0]:
+					NPCmov[index] = npc.bombAvoid(mazeRender,detect[1],detect[2],detect[3])
 			index +=1
 		if movementDelay == 0:
 			i = 0
 			while i < NumNPC:
 				if NPCmov[i] != []:
 					direction = NPCmov[i][0]
-					if direction == 0:
-						if (mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] == 0 or mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] == 1) and mazeRender[NPCs[i].posX][NPCs[i].posY-1][1] != 1:
-							mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
-							mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] = i+2
-							NPCs[i].posY -=1
-							NPCs[i].direct = 0
-					if direction == 2:
-						if (mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] == 0 or mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] == 1) and mazeRender[NPCs[i].posX-1][NPCs[i].posY][1] != 1:
-							mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
-							mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] = i+2
-							NPCs[i].posX -=1
-							NPCs[i].direct = 3
-					if direction == 1:
-						if (mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] == 0 or mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] == 1) and mazeRender[NPCs[i].posX][NPCs[i].posY+1][1] != 1:
-							mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
-							mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] = i+2
-							NPCs[i].posY +=1
-							NPCs[i].direct = 2
-					if direction == 3:
-						if (mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] == 0 or mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] == 1) and mazeRender[NPCs[i].posX+1][NPCs[i].posY][1] != 1:
-							mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
-							mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] = i+2
-							NPCs[i].posX +=1
-							NPCs[i].direct = 1
+					if NPCs[i].level == 1 and NPCs[i].estado == 1:
+						if direction == 0:
+							if (mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] == 0 or mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] == 1) and mazeRender[NPCs[i].posX][NPCs[i].posY-1][1] != 1:
+								mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
+								mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] = i+2
+								NPCs[i].posY -=1
+								NPCs[i].direct = 0
+						if direction == 2:
+							if (mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] == 0 or mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] == 1) and mazeRender[NPCs[i].posX-1][NPCs[i].posY][1] != 1:
+								mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
+								mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] = i+2
+								NPCs[i].posX -=1
+								NPCs[i].direct = 3
+						if direction == 1:
+							if (mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] == 0 or mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] == 1) and mazeRender[NPCs[i].posX][NPCs[i].posY+1][1] != 1:
+								mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
+								mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] = i+2
+								NPCs[i].posY +=1
+								NPCs[i].direct = 2
+						if direction == 3:
+							if (mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] == 0 or mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] == 1) and mazeRender[NPCs[i].posX+1][NPCs[i].posY][1] != 1:
+								mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
+								mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] = i+2
+								NPCs[i].posX +=1
+								NPCs[i].direct = 1
+
+					if NPCs[i].level == 2 and NPCs[i].estado == 1:
+						if direction == 0:
+							if mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] == 0 and mazeRender[NPCs[i].posX][NPCs[i].posY-1][1] != 1:
+								mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
+								mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] = i+2
+								NPCs[i].posY -=1
+								NPCs[i].direct = 0
+							elif mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] == 5 or mazeRender[NPCs[i].posX][NPCs[i].posY-1][0] == 1:
+								if NPCs[i].bombCount > 0:
+									mazeRender[NPCs[i].posX][NPCs[i].posY][1] = 1
+									Bombs.append(Bomb(NPCs[i].posX,NPCs[i].posY,NPCs[i].bombRange,NPCs[i].id))
+									NPCs[i].bombCount-=1
+									index = 0
+									for npc in NPCs:
+										#Pathfinding
+										NPCmov[index] = npc.pathfinding(NPCs[i].getPos(),mazeRender)
+										detect = npc.bombDetect(Bombs,mazeRender)
+										if detect[0]:
+											NPCmov[index] = npc.bombAvoid(mazeRender,detect[1],detect[2],detect[3])
+										index +=1
+						if direction == 2:
+							if mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] == 0  and mazeRender[NPCs[i].posX-1][NPCs[i].posY][1] != 1:
+								mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
+								mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] = i+2
+								NPCs[i].posX -=1
+								NPCs[i].direct = 3
+							elif mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] == 5 or mazeRender[NPCs[i].posX-1][NPCs[i].posY][0] == 1:
+								if NPCs[i].bombCount > 0:
+									mazeRender[NPCs[i].posX][NPCs[i].posY][1] = 1
+									Bombs.append(Bomb(NPCs[i].posX,NPCs[i].posY,NPCs[i].bombRange,NPCs[i].id))
+									NPCs[i].bombCount-=1
+									index = 0
+									for npc in NPCs:
+										#Pathfinding
+										NPCmov[index] = npc.pathfinding(NPCs[i].getPos(),mazeRender)
+										detect = npc.bombDetect(Bombs,mazeRender)
+										if detect[0]:
+											NPCmov[index] = npc.bombAvoid(mazeRender,detect[1],detect[2],detect[3])
+										index +=1
+						if direction == 1:
+							if mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] == 0  and mazeRender[NPCs[i].posX][NPCs[i].posY+1][1] != 1:
+								mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
+								mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] = i+2
+								NPCs[i].posY +=1
+								NPCs[i].direct = 2
+							elif mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] == 5 or mazeRender[NPCs[i].posX][NPCs[i].posY+1][0] == 1:
+								if NPCs[i].bombCount > 0:
+									mazeRender[NPCs[i].posX][NPCs[i].posY][1] = 1
+									Bombs.append(Bomb(NPCs[i].posX,NPCs[i].posY,NPCs[i].bombRange,NPCs[i].id))
+									NPCs[i].bombCount-=1
+									index = 0
+									for npc in NPCs:
+										#Pathfinding
+										NPCmov[index] = npc.pathfinding(NPCs[i].getPos(),mazeRender)
+										detect = npc.bombDetect(Bombs,mazeRender)
+										if detect[0]:
+											NPCmov[index] = npc.bombAvoid(mazeRender,detect[1],detect[2],detect[3])
+										index +=1
+						if direction == 3:
+							if mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] == 0  and mazeRender[NPCs[i].posX+1][NPCs[i].posY][1] != 1:
+								mazeRender[NPCs[i].posX][NPCs[i].posY][0] = 0
+								mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] = i+2
+								NPCs[i].posX +=1
+								NPCs[i].direct = 1
+							elif mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] == 5 or mazeRender[NPCs[i].posX+1][NPCs[i].posY][0] == 1:
+								if NPCs[i].bombCount > 0:
+									mazeRender[NPCs[i].posX][NPCs[i].posY][1] = 1
+									Bombs.append(Bomb(NPCs[i].posX,NPCs[i].posY,NPCs[i].bombRange,NPCs[i].id))
+									NPCs[i].bombCount-=1
+									index = 0
+									for npc in NPCs:
+										#Pathfinding
+										NPCmov[index] = npc.pathfinding(NPCs[i].getPos(),mazeRender)
+										detect = npc.bombDetect(Bombs,mazeRender)
+										if detect[0]:
+											NPCmov[index] = npc.bombAvoid(mazeRender,detect[1],detect[2],detect[3])
+										index +=1
 					NPCmov[i].pop(0)
 				i+=1
 			movementDelay = 3
 		#NPC movement end
-
 		#Main map rendering
 		i, len1 = 0,len(mazeRender)
 		while i < len1:
@@ -430,8 +528,14 @@ while mainLoop:
 								Explosions.append(Explosion(Bombs[i].posX,Bombs[i].posY+j+1))
 						else:
 							posible[3] = False
+				if Bombs[i].id == -1:
+					Bomberman.bombCount += 1
+				index = 0
+				for npc in NPCs:
+					if npc.id == Bombs[i].id:
+						npc.bombCount+=1
 				del Bombs[i]
-				Bomberman.bombCount += 1
+				
 			i-=1
 
 
@@ -508,9 +612,6 @@ while mainLoop:
 						Bomberman.realocate(mazeRender)
 						mazeRender[playerPos[0]][playerPos[1]] = [0,0]
 						playerPos = Bomberman.getPos()
-			elif npc.level == 2:
-				NPCmov[index] = npc.pathfindingV2(Bomberman.getPos(),mazeRender)
-				index +=1
 		#end check life status
 		#Check victoria
 		if NumNPC - enemyDeleted == 0:

@@ -54,7 +54,7 @@ class GameMap(object):
 						self.maze[i][j-1] = [0,0]
 				elif self.maze[i][j][0] == -1:
 					valor = randint(0,100)
-					if valor <=80:
+					if valor <=75:
 						self.maze[i][j] = [0,0]
 					else:
 						self.maze[i][j] = [5,0]
@@ -63,7 +63,7 @@ class GameMap(object):
 				for j in range(heigth):
 					if self.maze[i][j] == [5,0]:
 						valor = randint(0,100)
-						if valor <=70:
+						if valor <=40:
 							valor2 = randint(0,2)
 							if valor2 == 0:
 								if extraLife > 0:

@@ -1,10 +1,11 @@
 class Bomb(object):
 	"""docstring for Bomb"""
-	def __init__(self, posx,posy,rangeB):
+	def __init__(self, posx,posy,rangeB,idI):
 		self.posX = posx
 		self.posY = posy
 		self.range = rangeB
 		self.time = 1000
+		self.id = idI
 
 	def decreaseTime(self):
 		self.time -= 100

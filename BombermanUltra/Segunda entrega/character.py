@@ -9,7 +9,7 @@ class Player(object):
 		self.width = sizew
 		self.height = sizeh
 		self.bombCount = 1
-		self.bombRange = 2
+		self.bombRange = 1
 		self.direct = 0
 		self.lifes = 3
 	def renderValues(self):
@@ -51,13 +51,14 @@ class Node(object):
 
 class NPC(Player):
 	"""docstring for NPC"""
-	def __init__(self, posx,posy,sizew,sizeh,iaType,playerPos,dificulty):
+	def __init__(self, posx,posy,sizew,sizeh,iaType,playerPos,dificulty,idI):
 		Player.__init__(self, posx,posy,sizew,sizeh)
 		self.iaType = iaType
 		self.playerPos = playerPos
 		self.area = 5
 		self.level = dificulty
 		self.estado = 1
+		self.id = idI
 
 	def muerte(self):
 		self.estado = 0
@@ -117,65 +118,7 @@ class NPC(Player):
 							break
 				if not(skip):
 					openList.append((child,child.f))
-		return self.wandering()
-
-	def pathfindingV2(self,posFin,maze):
-		startNode = Node(self.getPos(),None,-1)
-		endNode = Node(posFin,None,-1)
-		openList = []
-		closedList = []
-		path = []
-		openList.append((startNode,startNode.f))
-		while len(openList) > 0:
-			openList.sort(key=lambda x: x[1])
-			currentNode = openList[0][0]
-			closedList.append(currentNode)
-			openList.pop(0)
-
-			if currentNode.equal(endNode):
-				
-				newCurrent = currentNode
-				while newCurrent != None:
-					path.append(newCurrent.direction)
-					newCurrent = newCurrent.parent
-				path.pop(len(path)-1)
-				path = path[::-1]
-				return path
-
-			children = []
-			inVisited = False
-			for direction,iteratingPositions in enumerate([(0, -1), (0, 1), (-1, 0), (1, 0)]):
-				nextPositions = (currentNode.posX + iteratingPositions[0], currentNode.posY + iteratingPositions[1])
-				if not (maze[nextPositions[0]][nextPositions[1]][0] == 5 or maze[nextPositions[0]][nextPositions[1]][0] == 6 or maze[nextPositions[0]][nextPositions[1]][0] == 2 or maze[nextPositions[0]][nextPositions[1]][0] == 3 or maze[nextPositions[0]][nextPositions[1]][0] == 4 or maze[nextPositions[0]][nextPositions[1]][1] == 1 or maze[nextPositions[0]][nextPositions[1]][1] == 2):
-					newNode = Node(nextPositions,currentNode,direction)
-					inVisited = False
-					for i in closedList:
-						if i.equal(newNode):
-							inVisited = True
-							break
-					if not(inVisited):
-						children.append(newNode)
-						
-			inVisited = False
-			for child in children:
-				for i in closedList:
-					if i.equal(child):
-						inVisited = True
-						break
-				if inVisited:
-					continue
-				skip = False
-				child.g = currentNode.g + 1
-				child.h = ((child.posX - endNode.posX) ** 2) + ((child.posY - endNode.posY) ** 2)
-				child.f = child.g + child.h
-				for i in openList:
-					if child.equal(i[0]):
-						if child.g > i[0].g:
-							skip = True
-							break
-				if not(skip):
-					openList.append((child,child.f))
-		return self.wanderingV2()
+		return self.wandering(maze)
 
 	def pathclosing(self,playerDir,maze,mazeSize,actualPos):
 
@@ -201,94 +144,137 @@ class NPC(Player):
 		if dist <= self.area:
 			return self.pathfinding(posFin,maze)
 		else:
-			return self.wandering()
+			return self.wandering(maze)
 
-	def wandering(self):
+	def bombDetect(self,bombs,maze):
+		for i in bombs:
+			if (i.posX == self.posX and abs(i.posY - self.posY) <= i.range) or (i.posY == self.posY and abs(i.posX - self.posX) <= i.range):
+				
+				return True,i.posX,i.posY,i.range
+		return False,-1,-1,-1
+
+	def bombAvoid(self,maze,x,y,r):
 		ret = []
-		random = randint(0,100)
-		if self.direct == 0:
-			probUp,probDown,probLeft,probRigth = 40,50,80,100
-			if 0 <= random <= 40:
-				ret.append(0)
-			elif 41 <= random <= 50:
-				ret.append(1)
-			elif 51 <= random <= 75:
-				ret.append(2)
-			elif 76 <= random <= 100:
-				ret.append(3)
-		if self.direct == 1:
-			probUp,probDown,probLeft,probRigth = 25,50,60,100
-			if 0 <= random <= 25:
-				ret.append(0)
-			elif 26 <= random <= 50:
-				ret.append(1)
-			elif 51 <= random <= 60:
-				ret.append(2)
-			elif 61 <= random <= 100:
-				ret.append(3)
-		if self.direct == 2:
-			probUp,probDown,probLeft,probRigth = 10,50,80,100
-			if 0 <= random <= 10:
-				ret.append(0)
-			elif 11 <= random <= 50:
-				ret.append(1)
-			elif 51 <= random <= 75:
-				ret.append(2)
-			elif 75 <= random <= 100:
-				ret.append(3)
-		if self.direct == 3:
-			probUp,probDown,probLeft,probRigth = 25,50,90,100
-			if 0 <= random <= 25:
-				ret.append(0)
-			elif 26 <= random <= 50:
-				ret.append(1)
-			elif 51 <= random <= 90:
-				ret.append(2)
-			elif 91 <= random <= 100:
-				ret.append(3)
+		if (x == self.posX and abs(y - self.posY) <= r): 
+			if y > self.posY:
+				if maze[self.posX][self.posY-1][0] == 0 and maze[self.posX][self.posY-1][1] != 2:
+					ret.append(0)
+				else:
+					if maze[self.posX+1][self.posY][0] == 0 and maze[self.posX+1][self.posY][0] != 2:
+						ret.append(3)
+					elif maze[self.posX-1][self.posY][0] == 0 and maze[self.posX-1][self.posY][0] != 2:
+						ret.append(2)
+
+			elif y < self.posY:
+				if maze[self.posX][self.posY+1][0] == 0 and maze[self.posX][self.posY+1][1] != 2:
+					ret.append(1)
+				else:
+					if maze[self.posX+1][self.posY][0] == 0 and maze[self.posX+1][self.posY][1] != 2:
+						ret.append(3)
+					elif maze[self.posX-1][self.posY][0] == 0 and maze[self.posX-1][self.posY][1] != 2:
+						ret.append(2)
+			else:
+				if maze[self.posX][self.posY+1][0] == 0 and  maze[self.posX][self.posY+1][1] != 2:
+					ret.append(1)
+				elif maze[self.posX][self.posY-1][0] == 0 and maze[self.posX][self.posY-1][1] != 2:
+					ret.append(0)
+				elif maze[self.posX+1][self.posY][0] == 0 and maze[self.posX+1][self.posY][1] != 2:
+					ret.append(3)
+				elif maze[self.posX-1][self.posY][0] == 0 and maze[self.posX-1][self.posY][1] != 2:
+					ret.append(2)
+				else:
+					ret.append(4)
+
+		elif (y == self.posY and abs(x - self.posX) <= r):
+			if x > self.posX:
+				if maze[self.posX-1][self.posY][0] == 0 and maze[self.posX-1][self.posY][1] != 2:
+					ret.append(2)
+				else:
+					if maze[self.posX][self.posY+1][0] == 0 and maze[self.posX][self.posY+1][1] != 2:
+						ret.append(1)
+					elif maze[self.posX][self.posY-1][0] == 0 and maze[self.posX][self.posY-1][1] != 2:
+						ret.append(0)
+
+			elif x < self.posX:
+				if maze[self.posX+1][self.posY][0] == 0 and maze[self.posX+1][self.posY][1] != 2:
+					ret.append(3)
+				else:
+					if maze[self.posX+1][self.posY][0] == 0 and maze[self.posX+1][self.posY][1] != 2:
+						ret.append(0)
+					elif maze[self.posX-1][self.posY][0] == 0 and maze[self.posX-1][self.posY][1] != 2:
+						ret.append(1)
+			else:
+				if maze[self.posX][self.posY+1][0] == 0 and maze[self.posX][self.posY+1][1] != 2:
+					ret.append(1)
+				elif maze[self.posX][self.posY-1][0] == 0 and maze[self.posX][self.posY-1][1] != 2:
+					ret.append(0)
+				elif maze[self.posX+1][self.posY][0] == 0 and maze[self.posX+1][self.posY][1] != 2:
+					ret.append(3)
+				elif maze[self.posX-1][self.posY][0] == 0 and maze[self.posX-1][self.posY][1] != 2:
+					ret.append(2)
+				else:
+					ret.append(4)
 		return ret
 
-	def wanderingV2(self):
+	def wandering(self,maze):
 		ret = []
 		random = randint(0,100)
 		if self.direct == 0:
 			probUp,probDown,probLeft,probRigth = 40,50,80,100
 			if 0 <= random <= 40:
-				ret.append(0)
+				if maze[self.posX][self.posY-1][1] != 2:
+					ret.append(0)
 			elif 41 <= random <= 50:
-				ret.append(1)
+				if maze[self.posX][self.posY+1][1] != 2:
+					ret.append(1)
 			elif 51 <= random <= 75:
-				ret.append(2)
+				if maze[self.posX-1][self.posY][1] != 2:
+					ret.append(2)
 			elif 76 <= random <= 100:
-				ret.append(3)
+				if maze[self.posX+1][self.posY][1] != 2:
+					ret.append(3)
 		if self.direct == 1:
 			probUp,probDown,probLeft,probRigth = 25,50,60,100
 			if 0 <= random <= 25:
-				ret.append(0)
+				if maze[self.posX][self.posY-1][1] != 2:
+					ret.append(0)
 			elif 26 <= random <= 50:
-				ret.append(1)
+				if maze[self.posX][self.posY+1][1] != 2:
+					ret.append(1)
 			elif 51 <= random <= 60:
-				ret.append(2)
+				if maze[self.posX-1][self.posY][1] != 2:
+					ret.append(2)
 			elif 61 <= random <= 100:
-				ret.append(3)
+				if maze[self.posX+1][self.posY][1] != 2:
+					ret.append(3)
 		if self.direct == 2:
 			probUp,probDown,probLeft,probRigth = 10,50,80,100
 			if 0 <= random <= 10:
-				ret.append(0)
+				if maze[self.posX][self.posY-1][1] != 2:
+					ret.append(0)
 			elif 11 <= random <= 50:
-				ret.append(1)
+				if maze[self.posX][self.posY+1][1] != 2:
+					ret.append(1)
 			elif 51 <= random <= 75:
-				ret.append(2)
+				if maze[self.posX-1][self.posY][1] != 2:
+					ret.append(2)
 			elif 75 <= random <= 100:
-				ret.append(3)
+				if maze[self.posX+1][self.posY][1] != 2:
+					ret.append(3)
 		if self.direct == 3:
 			probUp,probDown,probLeft,probRigth = 25,50,90,100
 			if 0 <= random <= 25:
-				ret.append(0)
+				if maze[self.posX][self.posY-1][1] != 2:
+					ret.append(0)
 			elif 26 <= random <= 50:
-				ret.append(1)
+				if maze[self.posX][self.posY+1][1] != 2:
+					ret.append(1)
 			elif 51 <= random <= 90:
-				ret.append(2)
+				if maze[self.posX-1][self.posY][1] != 2:
+					ret.append(2)
 			elif 91 <= random <= 100:
-				ret.append(3)
+				if maze[self.posX+1][self.posY][1] != 2:
+					ret.append(3)
+		if len(ret) == 0:
+			ret.append(4)
 		return ret
