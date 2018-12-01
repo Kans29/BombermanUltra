@@ -10,11 +10,27 @@ class Player(object):
 		self.height = sizeh
 		self.bombCount = 1
 		self.direct = 0
-		self.lives = 3
+		self.lifes = 3
 	def renderValues(self):
 		return (self.posX,self.posY,self.width,self.height)
 	def getPos(self):
 		return [self.posX,self.posY]
+	def realocate(self,mapa):
+		ubicado = True	
+		prob = 85
+		while ubicado:
+			i = 0
+			while i < len(mapa)-1 and ubicado:
+				j = 0
+				while j < len(mapa[i])-1 and ubicado:
+					if mapa[i][j][0] == 0:
+						valor = randint(0,100)
+						if valor >= prob:
+							self.posX = i
+							self.posY = j
+							ubicado = False
+					j+=1
+				i+=1
 
 class Node(object):
 	"""docstring for Node"""
@@ -157,9 +173,9 @@ class NPC(Player):
 					openList.append((child,child.f))
 		return self.wanderingV2()
 
-	def pathclosing(self,playerDir,maze,mazeSize):
+	def pathclosing(self,playerDir,maze,mazeSize,actualPos):
 
-		playerPos = self.playerPos[:]
+		playerPos = actualPos[:]
 		if playerDir == 0:
 			while playerPos[1] > 1 and maze[playerPos[0]][playerPos[1]-1][0] != 6 and  maze[playerPos[0]][playerPos[1]-1][0] != 5:
 				playerPos[1]-=1
